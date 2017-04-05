@@ -3,26 +3,108 @@
 # perform operation on two numbers
 # print result
 
-Kernel.puts("Welcome to Calculator!")
-
-Kernel.puts("What's the first number?")
-number1 = Kernel.gets().chomp().to_i()
-
-Kernel.puts("What's the second number?")
-number2 = Kernel.gets().chomp().to_i()
-
-Kernel.puts("What operation would you like to perform? 1) add 2) substract 3) multiply 4) divide")
-operator = Kernel.gets().chomp()
-
-case operator
-when '1'
-  result = number1 + number2
-when '2'
-  result = number1 - number2
-when '3'
-  result = number1 * number2
-else
-  result = number1.to_f / number2.to_f
+#Welcome message and ask for name until NOT empty string given
+def prompt(messege)
+  puts "=>#{messege}"
 end
 
-puts("The result is #{result}")
+def valid_number?(num)
+  num.to_i != 0
+end
+
+def operation_to_messege(op)
+  case op
+  when '1'
+    'Adding'
+  when '2'
+    'Substracting'
+  when '3'
+    'Multiplying'
+  when '4'
+    'Dividing'
+  end
+end
+
+prompt('Welcome to Calculator! What is your name?')
+
+name = ''
+loop do
+  name = gets.chomp
+  if name.empty?
+    prompt('Please enter valid name!')
+  else
+    break
+  end
+end
+
+puts ''
+name.capitalize!
+prompt("Hello! #{name}")
+puts ''
+
+prompt('Please enter two numbers to perform caluclation!')
+
+#this is our main loop
+loop do
+  #keep asking for name until given NOT empty string
+  prompt('Enter first number: ')
+
+  number1 = nil
+  loop do
+    number1 = gets.chomp.to_i
+    if valid_number?(number1)
+      break
+    else
+      prompt('Please enter valid number....')
+    end
+  end
+
+  prompt('Enter second number: ')
+
+  number2 = nil
+  loop do
+    number2 = gets.chomp.to_i
+    if valid_number?(number2)
+      break
+    else
+      prompt('Please enter valid number....')
+    end
+  end
+
+  operator_message = <<~MSG
+    What operation would you like to perform
+    1) add
+    2) substract
+    3) multiply
+    4) divide
+      MSG
+
+  prompt(operator_message)
+  operator = ''
+  loop do
+    operator = gets.chomp
+
+    if %w(1 2 3 4).include?(operator)
+      break
+    else
+      prompt('Please choose 1, 2, 3 or 4')
+    end
+  end
+
+  result = case operator
+  when '1'
+    number1 + number2
+  when '2'
+    number1 - number2
+  when '3'
+    number1 * number2
+  when '4'
+    number1.to_f / number2.to_f
+  end
+
+  prompt("#{operation_to_messege(operator)} the two numbers...")
+  prompt("The result is #{result}")
+
+  prompt("Do you want to calculate some more ? (Y/N)")
+  break if gets.chomp.downcase!='y'
+end
