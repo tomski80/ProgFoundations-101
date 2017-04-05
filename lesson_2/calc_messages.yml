@@ -1,0 +1,44 @@
+
+welcome: "Welcome to Calculator! What is your name?"
+valid_name: "Please enter valid name!"
+greetings: "Hello! "
+numbers_prompt: "Please enter two numbers to perform caluclation!"
+first_number: "Enter first number: "
+second_number: "Enter second number: "
+valid_number: "Please enter valid number...."
+op_message: |
+    What operation would you like to perform
+    1) add
+    2) substract
+    3) multiply
+    4) divide 
+op_choice: "Please choose 1, 2, 3 or 4"
+operation_message: " the two numbers..."
+result_message: "The result is "
+repeat: "Do you want to calculate some more ? (Y/N)"
+
+pl:
+  welcome: "Witam w kalulatorze! Jak masz na imie?"
+  valid_name: "Prosze wprowadz poprawne imie!"
+  greetings: "Witam! "
+  numbers_prompt: "Wprowadz dwie liczby do kalkulacji!"
+  first_number: "Wprowadz pierwsza liczbe: "
+  second_number: "Wprowadz druga liczbe: "
+  valid_number: "Prosze podaj poprawna liczbe..."
+  op_message: |
+    Jaka operacje mam wykonac
+    1) dodawanie
+    2) odejmowanie
+    3) mnozenie
+    4) dzielenie
+  op_choice: "Prosze wybrac 1, 2, 3 lub 4"
+  operation_message: " dwoch liczb..."
+  result_message: "Wynik: "
+  repeat: "Czy chcesz wykonac inne kalkulacje? (Y/N)"
+
+
+
+
+
+
+

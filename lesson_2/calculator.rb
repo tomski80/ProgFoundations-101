@@ -2,36 +2,47 @@
 # ask the user for an operation to perform
 # perform operation on two numbers
 # print result
+require 'yaml'
+MESSAGES = YAML.load_file('calc_messages.yml')
 
-def prompt(messege)
-  puts "=>#{messege}"
+def prompt(mes)
+  puts "=>#{mes}"
 end
 
 def valid_number?(num)
-  num.to_i != 0
-end
-
-def operation_to_messege(op)
-  case op
-  when '1'
-    'Adding'
-  when '2'
-    'Substracting'
-  when '3'
-    'Multiplying'
-  when '4'
-    'Dividing'
+  begin
+    n = Integer(num)
+  rescue ArgumentError
+    begin
+      n = Float(num)
+    rescue
+      false
+    end
   end
 end
 
+def operation_to_message(op)
+  word = case op
+         when '1'
+           'Adding'
+         when '2'
+           'Substracting'
+         when '3'
+           'Multiplying'
+         when '4'
+           'Dividing'
+         end
+  word
+end
+
 # Welcome message and ask for name until NOT empty string given
-prompt('Welcome to Calculator! What is your name?')
+prompt(MESSAGES['welcome'])
 # keep asking for name until given NOT empty string
 name = ''
 loop do
   name = gets.chomp
   if name.empty?
-    prompt('Please enter valid name!')
+    prompt(MESSAGES['valid_name'])
   else
     break
   end
@@ -39,17 +50,17 @@ end
 
 puts ''
 name.capitalize!
-prompt("Hello! #{name}")
+prompt(MESSAGES['greetings'] + "#{name}")
 puts ''
 
 # this is our main loop
 loop do
-  prompt('Please enter two numbers to perform caluclation!')
-  prompt('Enter first number: ')
+  prompt(MESSAGES['numbers_prompt'])
+  prompt(MESSAGES['first_number'])
 
   number1 = nil
   loop do
-    number1 = gets.chomp.to_i
+    number1 = gets.chomp
     if valid_number?(number1)
       break
     else
@@ -57,25 +68,19 @@ loop do
     end
   end
 
-  prompt('Enter second number: ')
+  prompt(MESSAGES['second_number'])
 
   number2 = nil
   loop do
-    number2 = gets.chomp.to_i
+    number2 = gets.chomp
     if valid_number?(number2)
       break
     else
-      prompt('Please enter valid number....')
+      prompt(MESSAGES['valid_number'])
     end
   end
 
-  operator_message = <<~MSG
-    What operation would you like to perform
-    1) add
-    2) substract
-    3) multiply
-    4) divide
-      MSG
+  operator_message = MESSAGES['op_message']
 
   prompt(operator_message)
   operator = ''
@@ -85,24 +90,27 @@ loop do
     if %w(1 2 3 4).include?(operator)
       break
     else
-      prompt('Please choose 1, 2, 3 or 4')
+      prompt(MESSAGES['op_choice'])
     end
   end
 
   result = case operator
            when '1'
-             number1 + number2
+             number1.to_f + number2.to_f
            when '2'
-             number1 - number2
+             number1.to_f - number2.to_f
            when '3'
-             number1 * number2
+             number1.to_f * number2.to_f
            when '4'
              number1.to_f / number2.to_f
            end
 
-  prompt("#{operation_to_messege(operator)} the two numbers...")
-  prompt("The result is #{result}")
 
-  prompt("Do you want to calculate some more ? (Y/N)")
+  result = result.to_i if result.to_i.to_f == result
+
+  prompt("#{operation_to_message(operator)}" + MESSAGES['operation_message'])
+  prompt(MESSAGES['result_message'] + "#{result}")
+
+  prompt(MESSAGES['repeat'])
   break if gets.chomp.downcase != 'y'
 end
