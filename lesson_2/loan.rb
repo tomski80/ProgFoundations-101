@@ -12,7 +12,7 @@ rescue
 end
 
 prompt("Monthly repayments calculator.\n")
-# this is mine loop
+# this is main loop
 loop do
   prompt("--------------------------------\n")
 
@@ -24,7 +24,8 @@ loop do
       loan_amount = loan_amount.to_f
       break
     else
-      prompt("This is not valid amount! Please enter number e.g. 200.50 \n")
+      prompt("This is not valid amount! \
+Please enter positive number e.g. 200.50 \n")
       prompt('')
     end
   end
@@ -33,7 +34,7 @@ loop do
   loan_apr = 0
   loop do
     loan_apr = gets.chomp
-    if valid_number?(loan_apr) && loan_apr.to_f > 0
+    if valid_number?(loan_apr) && loan_apr.to_f >= 0
       loan_apr = loan_apr.to_f / 100 # convert percentage to actual number
       break
     else
@@ -61,7 +62,7 @@ Please only enter whole months e.g. 36 \n")
 
   loan_monthly_rate = loan_apr / 12
 
-  if loan_apr != 0
+  unless loan_apr == 0
     monthly_payment = loan_amount * \
                       (loan_monthly_rate / (1 - (1 + loan_monthly_rate) \
                       **-loan_length_months))
