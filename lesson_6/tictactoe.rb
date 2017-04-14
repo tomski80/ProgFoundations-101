@@ -1,6 +1,7 @@
 EMPTY = 0
-MARK_X = 1
-MARK_O = 2
+MARK_X = 1      # human have x
+MARK_O = 2      # computer have o
+FIRST = :player
 
 BOARD_ROW = { '1' => 0, '2' => 1, '3' => 2 }
 BOARD_COL = { 'a' => 0, 'b' => 1, 'c' => 2 }
@@ -68,7 +69,7 @@ def update_board(row_col, board, player)
   end
 end
 
-#random input
+# random input
 def computer_ai_random(board)
   loop do
     row_col = [rand(3), rand(3)]
@@ -76,17 +77,113 @@ def computer_ai_random(board)
   end
 end
 
-#defensive ai
-def computer_ai_defensive(board)
-
+def row_full?(board, row_num)
+  board[row_num].all? do |field|
+    field == EMPTY ? false : true
+  end
 end
-#agressive ai
-def computer_ai_aggressive(board)
 
+def col_full?(board, col_num)
+  tboard = board.transpose
+  tboard[col_num].all? do |field|
+    field == EMPTY ? false : true
+  end
+end
+
+def sum_col_marks(board, col_num, mark)
+  tboard = board.transpose
+  marks_in_col = 0
+  tboard[col_num].each do |field|
+    marks_in_col += 1 if field == mark
+  end
+  marks_in_col
+end
+
+def sum_row_marks(board, row_num, mark)
+  marks_in_row = 0
+  board[row_num].each do |field|
+    marks_in_row += 1 if field == mark
+  end
+  marks_in_row
+end
+
+def find_empty_in_row(board, row)
+  board[row].each_with_index do |field, index|
+    return index if field == EMPTY
+  end
+end
+
+def find_empty_in_col(board, col)
+  board.transpose[col].each_with_index do |field, index|
+    return index if field == EMPTY
+  end
+end
+
+def sum_marks_in_not_empty_rows(board, mark)
+  two_in_row = []
+  board.each_with_index do |_, index|
+    unless row_full?(board, index)
+      two_in_row[index] = sum_row_marks(board, index, mark)
+    end
+  end
+  two_in_row
+end
+
+def sum_marks_in_not_empty_cols(board, mark)
+  # check columns
+  two_in_col = []
+  board.transpose.each_with_index do |_, index|
+    unless col_full?(board, index)
+      two_in_col[index] = sum_col_marks(board, index, mark)
+    end
+  end
+  two_in_col
+end
+
+# defensive ai
+def computer_ai_defensive(board)
+  row_col = []
+
+  two_in_row = sum_marks_in_not_empty_rows(board, MARK_X)
+  two_in_col = sum_marks_in_not_empty_cols(board, MARK_X)
+
+  if two_in_row.find_index(2)
+    row_col[0] = two_in_row.find_index(2)
+    row_col[1] = find_empty_in_row(board, row_col[0])
+  elsif two_in_col.find_index(2)
+    row_col[1] = two_in_col.find_index(2)
+    row_col[0] = find_empty_in_col(board, row_col[1])
+  end
+  row_col
+end
+
+# agressive ai
+def computer_ai_aggressive(board)
+  row_col = []
+
+  two_in_row = sum_marks_in_not_empty_rows(board, MARK_O)
+  two_in_col = sum_marks_in_not_empty_cols(board, MARK_O)
+
+  if two_in_row.find_index(2)
+    row_col[0] = two_in_row.find_index(2)
+    row_col[1] = find_empty_in_row(board, row_col[0])
+  elsif two_in_col.find_index(2)
+    row_col[1] = two_in_col.find_index(2)
+    row_col[0] = find_empty_in_col(board, row_col[1])
+  end
+  row_col
 end
 
 def computer_input(board)
-  computer_ai_random(board)
+  row_col = computer_ai_random(board)
+  row_col = [1, 1] if field_empty?([1, 1], board)
+  unless computer_ai_defensive(board).none?
+    row_col = computer_ai_defensive(board)
+  end
+  unless computer_ai_aggressive(board).none?
+    row_col = computer_ai_aggressive(board)
+  end
+  row_col
 end
 
 def human_input(board)
@@ -118,15 +215,15 @@ end
 def check_diagonals(board, mark)
   win = []
   tmp = []
-  for index in 0...3
+  board.each_with_index do |_, index|
     tmp << (board[index][index] == mark)
   end
   win << tmp.all?
 
   row = 2
   tmp = []
-  for col in 0...3
-    tmp << (board[row][col] == mark)
+  board.each_with_index do |_, index|
+    tmp << (board[row][index] == mark)
     row -= 1
   end
   win << tmp.all?
@@ -188,16 +285,37 @@ def swap_player(player)
   player == :player ? :computer : :player
 end
 
+def choose_who_first
+  choice = ''
+  loop do
+    puts"Hello Player! Who should go first? (c)omputer, (p)layer, or (r)andome?"
+    choice = gets.chomp.downcase
+
+    break if %w[c p r].include?(choice)
+    puts "Wrong input! Please enter only one letter!"
+  end
+
+  case choice
+  when 'c'
+    :computer
+  when 'p'
+    :player
+  else
+    [:player, :computer].sample
+  end
+end
+
 loop do
-  # 0 = empty, 1 = o, 2 = x
   board = [[EMPTY, EMPTY, EMPTY],
            [EMPTY, EMPTY, EMPTY],
            [EMPTY, EMPTY, EMPTY]]
   winner = ''
   player = :player
 
+  player = choose_who_first if FIRST == :choose
+  print_board(board) if player == :player
+
   loop do
-    print_board(board)
     row_col = player_input(board, player)
     update_board(row_col, board, player)
 
@@ -209,6 +327,7 @@ loop do
       break
     end
 
+    print_board(board) if player == :computer
     player = swap_player(player)
   end
 
