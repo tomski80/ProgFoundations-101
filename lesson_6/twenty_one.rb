@@ -65,7 +65,7 @@ def cards_value_in(hand)
   sum_in_hand = num_values_in_hand.inject(:+) # sum without aces
   # add aces value
   while aces_count > 0
-    sum_in_hand += if (sum_in_hand + 11) < WIN
+    sum_in_hand += if (sum_in_hand + 11) <= WIN
                      11
                    else
                      1
@@ -79,7 +79,7 @@ def bust?(hand)
   cards_value_in(hand) > WIN
 end
 
-def who_won?(player_hand, dealer_hand)
+def game_result(player_hand, dealer_hand)
   player_total = cards_value_in(player_hand)
   dealer_total = cards_value_in(dealer_hand)
   if dealer_total > WIN
@@ -103,8 +103,8 @@ def show_total(player_hand, dealer_hand, show_dealer = false)
 end
 
 def display_winner(player_hand, dealer_hand)
-  winner = who_won?(player_hand, dealer_hand)
-  display_dealer = winner == :player_bust ? false : true
+  winner = game_result(player_hand, dealer_hand)
+  display_dealer = winner != :player_bust
   display_cards(player_hand, dealer_hand, display_dealer)
 
   case winner
